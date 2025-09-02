@@ -1,0 +1,144 @@
+---
+title: "homework2"
+format: html
+editor: visual
+---
+
+## Task1
+
+*Create vectors for pre and post treatment blood pressure measurements.*
+```{r}
+#pre blood pressure measurements
+pretreat <- c(120, 151, 125, 126, 115, 132, 132, 129, 134, 139, 127, 122, 127, 135, 133, 128, 147, 138, 140, 132)
+
+#post blood pressure measurements
+posttreat <- c(127, 145, 135, 122, 115, 122, 123, 126, 126, 129, 132, 146, 120, 114, 121, 120, 128, 120, 133, 115)
+```
+
+*Assign names to measurements using paste() and names().*
+```{r}
+#Concatenate "subject" to #s from 1-20 separated by _
+name_subject <- paste("Subject", 1:20, sep = "_")
+
+#assign names
+names(posttreat) <- name_subject
+names(pretreat) <- name_subject
+
+#check that names assigned properly
+name_subject
+head(pretreat)
+head(posttreat)
+
+```
+
+*Calculate the change in blood pressure for each patient (pretreatment - posttreatment)*
+```{r}
+#vector comprised of change values
+bp_change_vector <- (pretreat-posttreat)
+bp_change_vector
+
+```
+
+*Determine average decrease in blood pressure.*
+```{r}
+#vector with overall mean
+bp_average <- mean(bp_change_vector)
+bp_average
+```
+
+*Find patients with a decrease in BP*
+```{r}
+#what patients experienced a decrease in BP after treatment?
+which(bp_change_vector > 0)
+```
+
+*Create isolated vector containing only patients with a decrease in BP*
+```{r}
+#Boolean vector, TRUE when value > 0
+decrease_pts <- bp_change_vector > 0
+
+#Use as indexing vector to create a new subset
+decrease_subset <- bp_change_vector[decrease_pts]
+
+decrease_subset
+```
+
+*Find average decrease in blood pressure among subset*
+```{r}
+bp_average_reduction <- mean(decrease_subset)
+bp_average_reduction
+```
+
+# Task 2
+*Create new dataframe combining vectors*
+```{r}
+bp_frame <- data.frame(name_subject, pretreat, posttreat, bp_change_vector)
+
+#follow specified naming convention
+names(bp_frame) <- c("patient", "pre_bp", "post_bp", "diff_bp")
+```
+
+*Return rows of bp_frame where diff_bp is negative (-)*
+```{r}
+subset(bp_frame,bp_frame$diff_bp < 0)
+```
+
+*Add a new column where TRUE if post_bp < 120 and FALSE if post_bp >= 120*
+
+```{r}
+#boolean vector, TRUE if post treatment BP < 120 
+bp_flag <- bp_frame$post_bp < 120
+
+#create new column consisting of bp_flag vector values
+bp_frame$bp_flag <- bp_flag
+
+knitr::kable(bp_frame)
+```
+
+# Task 3
+
+*Create new data frame similar to Task 2 - but with new placebo data*
+```{r}
+#create new pre-post treatment vectors
+task3_pretreat <- c(138, 135, 147, 117, 152, 134, 114, 121, 131, 130)
+task3_posttreat <- c(105, 136, 123, 130, 134, 143, 135, 139, 120, 124)
+task3_diff <- task3_pretreat-task3_posttreat
+
+# reuse subject names vector but subset to reflect smaller dataset
+task3_name <- name_subject[1:10]
+
+#combine into dataframe
+task3_frame <- data.frame(task3_name, task3_pretreat, task3_posttreat, task3_diff)
+
+#rename as in Task 2
+names(task3_frame) <- c("patient","pre_bp", "post_bp", "diff_bp")
+
+#create flag column
+task3_bpflag <- task3_frame$post_bp < 120
+task3_frame$bp_flag <- task3_bpflag
+```
+
+# Create list based on 2 data frames
+
+```{r}
+bp_list <- list(bp_frame, task3_frame)
+names(bp_list) <- c("treatment", "placebo")
+```
+
+*Accessing first list element three ways:*
+
+```{r}
+# list with named element
+bp_list[1]
+# return element itself
+bp_list[[1]]
+bp_list$treatment
+```
+
+*Accessing pre_bp column of placebo data frame*
+```{r}
+bp_list$placebo$pre_bp
+```
+
+
+#The `echo: false` option disables the printing of code (only output is #displayed).
